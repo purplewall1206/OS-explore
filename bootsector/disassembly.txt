@@ -1,0 +1,11 @@
+
+boot_sect.bin：     文件格式 binary
+
+
+Disassembly of section .data:
+
+0000000000000000 <.data>:
+   0:	eb fe                	jmp    0x0
+	...
+ 1fe:	55                   	push   %rbp
+ 1ff:	aa                   	stos   %al,%es:(%rdi)
