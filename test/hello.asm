@@ -11,6 +11,7 @@ _start:   mov       rax, 1                  ; system call for write
         mov rax, [_start]
         mov rax, message
         mov rax, [message]
+        push rax
 
 
           mov       rax, 60                 ; system call for exit
