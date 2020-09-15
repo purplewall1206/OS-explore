@@ -8,7 +8,7 @@ KERNEL_OFFSET equ 0x1000
     call print
     call print_nl
 
-    call MSG_LOAD_KERNEL
+    call load_kernel
     call switch_to_pm
     jmp $  ; may not executed
 
