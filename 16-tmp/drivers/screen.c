@@ -19,6 +19,7 @@ int get_offset_col(int offset);
  */
 void kprint_at(char *message, int col, int row) {
     /* Set cursor if col/row are negative */
+    char *xxx = message;
     int offset;
     if (col >= 0 && row >= 0)
         offset = get_offset(col, row);
