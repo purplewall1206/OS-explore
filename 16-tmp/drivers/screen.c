@@ -106,12 +106,13 @@ void set_cursor_offset(int offset) {
 
 void clear_screen() {
     int screen_size = MAX_COLS * MAX_ROWS;
+    int screen_size1= 25 * 80;
     int i;
-    char *screen = (char*)VIDEO_ADDRESS;
+    char *screen = VIDEO_ADDRESS;
 
     for (i = 0; i < screen_size; i++) {
         screen[i*2] = ' ';
-        screen[i*2+1] = WHITE_ON_BLACK;
+        screen[i*2+1] = RED_ON_WHITE;
     }
     set_cursor_offset(get_offset(0, 0));
 }
