@@ -7,7 +7,7 @@ OBJ = ${C_SOURCES:.c=.o}
 CC = gcc
 GDB = gdb
 
-CFLAGS = -g -m32 -no-pie -fno-pic 
+CFLAGS = -g -m32 -no-pie -fno-pic -z execstack 
 
 os-image.bin: boot/bootsect.bin kernel.bin
 	cat $^ > os-image.bin
@@ -19,11 +19,11 @@ kernel.elf: boot/kernel_entry.o ${OBJ}
 	ld -melf_i386 -o $@ -Ttext 0x1000 $^
 
 run: os-image.bin
-	qemu-system-x86_64 -m 1G -fda os-image.bin
+	qemu-system-x86_64  -fda os-image.bin
 
 debug: os-image.bin kernel.elf
 	qemu-system-x86_64 -s -S -fda os-image.bin & 
-	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf" -ex "break *0x7c00"
+	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf" -ex "break *0x7c00" -ex "break main"
 
 %.o: %.asm
 	nasm $< -f elf -o $@
