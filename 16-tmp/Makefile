@@ -8,15 +8,16 @@ CC = gcc
 GDB = gdb
 
 CFLAGS =  -ffreestanding -fno-stack-protector -z execstack -m32 -no-pie -fno-pic 
+LDFLAGS=  -melf_i386
 
 os-image.bin: boot/bootsect.bin kernel.bin
 	cat $^ > os-image.bin
 
 kernel.bin: boot/kernel_entry.o ${OBJ}
-	ld -melf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+	ld ${LDFLAGS} -o $@ -Ttext 0x1000 $^ --oformat binary
 
 kernel.elf: boot/kernel_entry.o ${OBJ}
-	ld -melf_i386 -o $@ -Ttext 0x1000 $^
+	ld ${LDFLAGS} -o $@ -Ttext 0x1000 $^
 
 run: os-image.bin
 	qemu-system-x86_64  -fda os-image.bin
@@ -29,7 +30,7 @@ debug: os-image.bin kernel.elf
 	nasm $< -f elf -o $@
 
 %.o: %.c ${HEADERS}
-	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
+	${CC} ${CFLAGS} -c $< -o $@
 
 %.bin: %.asm
 	nasm $< -f bin -o $@
