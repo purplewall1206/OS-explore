@@ -7,36 +7,30 @@ OBJ = ${C_SOURCES:.c=.o}
 CC = gcc
 GDB = gdb
 
-CFLAGS = -g -m32 -no-pie -fno-pic 
+CFLAGS =  -ffreestanding -fno-stack-protector -z execstack -m32 -no-pie -fno-pic 
+LDFLAGS=  -melf_i386
 
-# First rule is run by default
 os-image.bin: boot/bootsect.bin kernel.bin
 	cat $^ > os-image.bin
 
-# '--oformat binary' deletes all symbols as a collateral, so we don't need
-# to 'strip' them manually on this case
 kernel.bin: boot/kernel_entry.o ${OBJ}
-	ld -melf_i386 -o $@ -Ttext 0x1000 $^ --oformat binary
+	ld ${LDFLAGS} -o $@ -Ttext 0x1000 $^ --oformat binary
 
-# Used for debugging purposes
 kernel.elf: boot/kernel_entry.o ${OBJ}
-	ld -melf_i386 -o $@ -Ttext 0x1000 $^ 
+	ld ${LDFLAGS} -o $@ -Ttext 0x1000 $^
 
 run: os-image.bin
-	qemu-system-x86_64 -fda os-image.bin
+	qemu-system-x86_64  -fda os-image.bin
 
-# Open the connection to qemu and load our kernel-object file with symbols
 debug: os-image.bin kernel.elf
-	qemu-system-x86_64 -fda os-image.bin -s -S &
-	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
-
-# Generic rules for wildcards
-# To make an object, always compile from its .c
-%.o: %.c ${HEADERS}
-	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
+	qemu-system-x86_64 -s -S -fda os-image.bin & 
+	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf" -ex "break *0x7c00" -ex "break main" -ex "c" -ex "c" 
 
 %.o: %.asm
 	nasm $< -f elf -o $@
+
+%.o: %.c ${HEADERS}
+	${CC} ${CFLAGS} -c $< -o $@
 
 %.bin: %.asm
 	nasm $< -f bin -o $@
