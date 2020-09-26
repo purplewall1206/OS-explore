@@ -7,7 +7,7 @@ OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 CC = gcc
 GDB = gdb
 
-CFLAGS =  -ffreestanding -fno-stack-protector -z execstack -m32 -no-pie -fno-pic 
+CFLAGS =  -ffreestanding -fno-stack-protector -z execstack -m32 -no-pie -fno-pic -Wall -Wextra -g 
 LDFLAGS=  -melf_i386
 
 os-image.bin: boot/bootsect.bin kernel.bin
@@ -24,7 +24,7 @@ run: os-image.bin
 
 debug: os-image.bin kernel.elf
 	qemu-system-x86_64 -s -S -fda os-image.bin & 
-	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf" -ex "break *0x7c00" -ex "break main" -ex "c" -ex "c" 
+	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf" -ex "break *0x7c00" -ex "break kernel_main" -ex "c" -ex "c" 
 
 %.o: %.asm
 	nasm $< -f elf -o $@

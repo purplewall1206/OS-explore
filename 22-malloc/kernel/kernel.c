@@ -3,8 +3,8 @@
 #include "kernel.h"
 #include "../libc/string.h"
 
-void main() {
-    clear_screen();
+void kernel_main() {
+    // clear_screen();
     isr_install();
     irq_install();
     // __asm__ __volatile__("int $2");
@@ -13,6 +13,10 @@ void main() {
     // init_timer(50);
 
     // init_keyboard();
+    asm("int $2");
+    asm("int $3");
+
+
     kprint("Type something, it will go through the kernel\n"
         "Type END to halt the CPU\n> ");
 }
